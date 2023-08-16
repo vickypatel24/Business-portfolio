@@ -1,0 +1,107 @@
+{% extends "master.html" %}
+
+{% block title %}
+  Edit Product
+{% endblock %}
+
+
+{% block content %}
+<!--<div class="nk-add-product toggle-slide toggle-slide-right" data-content="addProduct" data-toggle-screen="any" data-toggle-overlay="true" data-toggle-body="true" data-simplebar>-->
+<div class="nk-content ">
+    <div class="nk-block-head">
+        <div class="nk-block-head-content">
+            <h5 class="nk-block-title">Edit Product</h5>
+            <div class="nk-block-des">
+                <p>Edit information </p>
+            </div>
+        </div>
+    </div><!-- .nk-block-head -->
+    <div class="nk-block">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="product_name">Product Name</label>
+                        <div class="form-control-wrap">
+                            <input type="text" class="form-control" name="product_name" id="product_name" value="{{product.product_name}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="product_price">Product Price</label>
+                        <div class="form-control-wrap">
+                            <input type="number" class="form-control" name="product_price" id="product_price" value="{{product.product_price}}">
+                        </div>
+                    </div>
+                </div>
+<!--                <div class="col-md-6">-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="form-label" for="product_discount">Product Discount </label>-->
+<!--                        <div class="form-control-wrap">-->
+<!--                            <input type="number" class="form-control" name="product_discount" id="product_discount" value="{{product_category_list.product_discount}}">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="product_category">Product Category</label>
+                        <div class="form-control-wrap">
+                            <select name="product_category" class="form-control" id="product_category" >
+                                {% for x in product_category_list %}
+                                <option value="{{ x.id }}"{% if x.id == product.product_category_id %} selected {% endif %}>{{ x.product_category }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="product_description">Product Description</label>
+                        <div class="form-control-wrap">
+                            <!--<input type="" class="form-control" name="product_description" id="product_description">-->
+                            <textarea name="product_description" id="product_description" class="form-control">{{product.product_description}}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label" for="product_image">Product Image</label>
+                    <div class="form-control-wrap">
+                        <div class="form-file">
+                            <input type="file" name="product_image" class="form-file-input" id="customFile">
+                            <label class="form-file-label"  id="product_image" for="customFile">Choose file</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-control-wrap">
+                        <div class="form-file">
+                            <span class="tb-product">
+                                <img src="/media/{{product.product_image}}" height="150px" alt="" class="thumb">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+<!--                <div class="nk-tb-col tb-col-sm">-->
+<!--                    <label class="form-label" for="product_image">Product Image</label>-->
+<!--                        <div class="nk-tb-col tb-col-sm">-->
+<!--                            <span class="tb-product">-->
+<!--                                 <img src="/media/{{product.product_image}}" alt="" class="thumb">-->
+<!--                                </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="col-12">
+                        <button class="btn btn-primary" type="submit"><em class="icon ni ni-plus"></em><span>Save</span></button>
+                    </div>
+            </div>
+        </form>
+    </div><!-- .nk-block -->
+</div>
+<!--</div>-->
+
+
+{% endblock %}
