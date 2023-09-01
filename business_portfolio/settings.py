@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -155,3 +154,10 @@ MEDIA_URL = "/media/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Your SMTP server's hostname
+EMAIL_PORT = 587  # Port for the SMTP server
+EMAIL_USE_TLS = True  # Use TLS encryption for secure communication
+EMAIL_HOST_USER = 'vitragpatel2408@gmail.com'  # Your SMTP username
+EMAIL_HOST_PASSWORD = 'ficdswkkbjcabjzd'  # Your SMTP password

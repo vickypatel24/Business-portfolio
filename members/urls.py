@@ -14,6 +14,8 @@ urlpatterns = [
     path('product_list/', views.product_list, name='product_list'),
     path('edit_product/<int:id>/', views.edit_product, name='edit_product'),
     path('delete_product/<int:id>/', views.delete_product, name='delete_product'),
+    path('verify_otp/<int:user_id>/', views.verify_otp, name='verify_otp'),
+    path('reset_password/<int:user_id>/', views.reset_password, name='reset_password'),
 ]
 
 if settings.DEBUG:

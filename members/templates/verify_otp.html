@@ -1,0 +1,36 @@
+{% extends "master.html" %}
+
+{% block title %}
+  verify otp
+{% endblock %}
+
+
+{% block content %}
+<div class="nk-wrap nk-wrap-nosidebar">
+    <div class="nk-content ">
+        <div class="nk-block nk-block-middle nk-auth-body  wide-xs">
+            <div class="card card-bordered">
+                <div class="card-inner card-inner-lg">
+                    <div class="nk-block-head">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <label class="form-label" for="default-01">Enter OTP</label>
+                                </div>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control form-control-lg" name="enter_otp" id="default-01" placeholder="Enter OTP">
+                                </div>
+                            </div>
+                            <h4>{{ error_msg }}</h4>
+                            <div class="form-group">
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -17,7 +17,7 @@ class Products(models.Model):
     product_category = models.ForeignKey('Product_details', on_delete=models.CASCADE)
     product_description = models.TextField(max_length=255, null=True)
     timestamp = models.DateTimeField(auto_now=True)
-    product_image = models.ImageField(upload_to='shop/images')
+    product_image = models.ImageField(upload_to='shop/images', null=True)
 
     def __str__(self):
         return self.product_name
@@ -30,3 +30,8 @@ class Product_details(models.Model):
 
     def __str__(self):
         return self.product_category
+
+class UserOtp(models.Model):
+    objects = None
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    otp = models.IntegerField()
