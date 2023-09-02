@@ -1,4 +1,5 @@
 from random import randint
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
@@ -6,8 +7,9 @@ from django.shortcuts import render, redirect
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.template.loader import render_to_string
 from .models import Products, Product_details, UserOtp
-from django.core.mail import send_mail, BadHeaderError
+from django.core.mail import send_mail, BadHeaderError, EmailMessage
 
 
 # from django import forms
@@ -89,21 +91,26 @@ def master(request):
 @login_required(login_url="/login/")
 def product_list(request):
     product_category_list = Product_details.objects.all().values()
-    product_list = Products.objects.all()
+    product_list = Products.objects.all().order_by('-id')
     paginator = Paginator(product_list, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
+
     if request.POST:
         product_name = request.POST['product_name']
         product_price = request.POST['product_price']
         product_category_id = request.POST['product_category']
+        print(product_category_id)
         product_description = request.POST['product_description']
-        product_image = request.FILES['product_image']
+        product_img = ''
+        if request.FILES:
+            product_image = request.FILES['product_image']
+            product_img = product_image
         new_product = Products(product_name=product_name, product_price=product_price
-                               , product_category_id=product_category_id, product_description=product_description
-                               , product_image=product_image)
+                               , product_category_id=product_category_id, product_description=product_description,
+                               product_image=product_img)
         new_product.save()
-        return redirect('/product_list/')
+        return redirect(f'/product_list/')
     templates = loader.get_template('product_list.html')
     return render(request, 'product_list.html', {'page': page, 'product_list': product_list,
                                                  'product_category_list': product_category_list})
@@ -113,19 +120,22 @@ def product_list(request):
 def edit_product(request, id):
     product = Products.objects.get(id=id)
     product_category_list = Product_details.objects.all().values()
+
+    context = {}
     if request.POST:
+
         product.product_name = request.POST['product_name']
         product.product_price = request.POST['product_price']
         product.product_category_id = request.POST['product_category']
         product.product_description = request.POST['product_description']
-        print(product.product_image)
-        print(request.FILES['product_image'])
-
-        if request.FILES['product_image'] != None:
-            product.product_image = request.FILES['product_image']
-            print(request.FILES['product_image'])
-
-        product.product_image = request.FILES['product_image']
+        if request.FILES:
+            try:
+                img = product.product_image
+                img.delete()
+                if request.FILES['product_image']:
+                    product.product_image = request.FILES['product_image']
+            except:
+                context['error_msg'] = "Invalid Image"
         product.save()
         return redirect('/product_list/')
     templates = loader.get_template('edit_product.html')
@@ -140,7 +150,6 @@ def edit_product(request, id):
 def delete_product(request, id):
     product = Products.objects.get(id=id)
     product.delete()
-
     return redirect('/product_list/')
 
 
@@ -174,16 +183,17 @@ def forgot_password(request):
             # print(user_id)
             # print("user")
         except:
-            # print("invalid")
             context['error_msg'] = "Invalid Email"
         else:
             subject = 'Forgot Password Request'
             otp = randint(100000, 999999)
-            message = f"Your otp is {otp}"
-            from_mail = 'vitragpatel2408@gmail.com'
-
+            # message = f"Your otp is {otp}"
+            from_mail = settings.EMAIL_HOST_USER
+            html_message = render_to_string('email_template.html', {'otp': otp, 'user': user.username})
             try:
-                send_mail(subject, message, from_mail, [email])
+                email = EmailMessage(subject, html_message, from_mail, [email])
+                email.content_subtype = 'html'
+                email.send()
                 u_otp = UserOtp(user=user, otp=otp)
                 u_otp.save()
                 # print(user)
@@ -193,24 +203,26 @@ def forgot_password(request):
     return HttpResponse(templates.render(context, request))
 
 
+def email_view(request):
+    context = {}
+    templates = loader.get_template('email_template.html')
+    return HttpResponse(templates.render(context, request))
+
+
 def verify_otp(request, user_id):
     templates = loader.get_template('verify_otp.html')
     context = {}
     user_name = request.user.username
     print(user_id)
-    print("user_name")
     if request.POST:
         otp = request.POST.get('enter_otp', '')
-        print("1")
         if otp:
             try:
                 u_otp = UserOtp.objects.get(otp=otp, user_id=user_id)
-                print("2")
             except:
                 context['error_msg'] = "Invalid OTP"
             else:
                 u_otp.delete()
-                print("3")
                 return HttpResponseRedirect(f"/reset_password/{user_id}/")
     return HttpResponse(templates.render(context, request))
 
@@ -226,7 +238,6 @@ def reset_password(request, user_id):
         c_pass = request.POST["c_password"]
         print(n_pass)
         print(c_pass)
-
         if n_pass == c_pass:
             u = User.objects.get(id=user_id)
             print(u)

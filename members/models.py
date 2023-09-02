@@ -1,6 +1,4 @@
 from django.db import models
-from django.utils import timezone
-
 
 # Create your models here.
 class Member(models.Model):
@@ -27,9 +25,9 @@ class Product_details(models.Model):
     product_category = models.CharField(max_length=255)
     product_discount = models.IntegerField(null=True)
 
-
     def __str__(self):
         return self.product_category
+
 
 class UserOtp(models.Model):
     objects = None
